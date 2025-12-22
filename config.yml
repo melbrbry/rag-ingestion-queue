@@ -1,0 +1,11 @@
+# Application Configuration
+
+# Pinecone Configuration
+pinecone:
+  api_key: "${PINECONE_API_KEY}"
+  host_name: "${PINECONE_HOST_NAME}"
+
+# Chunking Parameters
+chunking:
+  chunk_size: 1000
+  overlap: 200
