@@ -5,11 +5,30 @@ from app.domain.ingestion.parser import parse_document
 from app.domain.ingestion.chunker import chunk_text
 from app.domain.ingestion.vector_store import upsert_vectors
 
-def process_file(job_id: str, file_path: str):
+def process_job(message: dict):
+    job_id = message["job_id"]
+    file_path = message["file_path"]
+
     db = SessionLocal()
     repo = JobRepository(db)
 
+    job = repo.get(job_id)
+
+    if not job:
+        db.close()
+        raise RuntimeError(f"Job {job_id} not found")
+
+    # Idempotency guard
+    if job.status == JobStatus.COMPLETED:
+        db.close()
+        return
+
+    if job.status == JobStatus.PROCESSING:
+        db.close()
+        return
+
     try:
+
         repo.update_status(job_id, JobStatus.PROCESSING)
 
         # 1 Parse file
@@ -24,5 +43,10 @@ def process_file(job_id: str, file_path: str):
         # 4 Mark job completed
         repo.update_status(job_id, JobStatus.COMPLETED)
 
+
     except Exception as e:
         repo.update_status(job_id, JobStatus.FAILED, error_message=str(e))
+        raise
+
+    finally:
+        db.close()

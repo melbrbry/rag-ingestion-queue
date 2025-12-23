@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from app.api.dependencies import *
+from app.services.dependencies import *
 from app.domain.repositories.job_repository import JobRepository
 from app.domain.models.job import JobStatus
 

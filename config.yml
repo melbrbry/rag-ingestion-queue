@@ -9,3 +9,10 @@ pinecone:
 chunking:
   chunk_size: 1000
   overlap: 200
+
+# Queue Backend Configuration
+queue:
+  backend: "rabbitmq"  # Options: "rabbitmq / sqs"
+  rabbitmq:
+    connection_string: ${RABBITMQ_CONNECTION}
+    queue_name: ${QUEUE_NAME}

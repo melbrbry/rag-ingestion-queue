@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from app.api.ingest import ingest_router
-from app.api.jobs import jobs_router
+from app.services.api.routes.ingest import ingest_router
+from app.services.api.routes.jobs import jobs_router
 from app.domain.repositories.init_db import init_db
 
 app = FastAPI()
