@@ -17,13 +17,15 @@ ingest_router = APIRouter()
 async def ingest_file(
     file: UploadFile,
     repo: Annotated[JobRepository, Depends(get_job_repository)],
-    queue_client: Annotated[QueueClient, Depends(get_queue_client)]
+    queue_client: Annotated[QueueClient, Depends(get_queue_client)],
+    config: Annotated[dict, Depends(get_config)]
 ):
     # 1. Generate job ID
     job_id = str(uuid.uuid4())
 
-    # 2. Save file
-    file_path = save_file(file, job_id)
+    # 2. Upload file to S3
+    bucket_name = config["s3"]["bucket_name"]
+    object_key = save_file(file, job_id, bucket_name)
 
     # 3. Create job record
     job = Job(
@@ -40,7 +42,8 @@ async def ingest_file(
     # 4. Enqueue job for processing
     queue_client.send(QueueMessage(
         job_id=job.id,
-        file_path=file_path
+        object_key=object_key,
+        bucket_name=bucket_name
     ))
 
     # 5. Return job_id immediately

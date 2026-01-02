@@ -7,7 +7,8 @@ from app.domain.ingestion.vector_store import upsert_vectors
 
 def process_job(message: dict):
     job_id = message["job_id"]
-    file_path = message["file_path"]
+    object_key = message["object_key"]
+    bucket_name = message["bucket_name"]
 
     db = SessionLocal()
     repo = JobRepository(db)
@@ -31,8 +32,8 @@ def process_job(message: dict):
 
         repo.update_status(job_id, JobStatus.PROCESSING)
 
-        # 1 Parse file
-        text = parse_document(file_path)
+        # 1 Parse file from S3
+        text = parse_document(object_key, bucket_name)
 
         # 2 Chunk text
         chunks = chunk_text(text)

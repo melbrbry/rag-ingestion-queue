@@ -5,6 +5,10 @@ pinecone:
   api_key: "${PINECONE_API_KEY}"
   host_name: "${PINECONE_HOST_NAME}"
 
+# S3 Configuration
+s3:
+  bucket_name: "${S3_BUCKET_NAME}"
+
 # Chunking Parameters
 chunking:
   chunk_size: 1000
@@ -12,7 +16,9 @@ chunking:
 
 # Queue Backend Configuration
 queue:
-  backend: "rabbitmq"  # Options: "rabbitmq / sqs"
+  backend: "sqs"  # Options: "rabbitmq", "sqs"
   rabbitmq:
     connection_string: ${RABBITMQ_CONNECTION}
     queue_name: ${QUEUE_NAME}
+  sqs:
+    queue_url: ${SQS_QUEUE_URL}
